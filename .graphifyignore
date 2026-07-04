@@ -1,0 +1,16 @@
+*.md
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.pdf
+*.csv
+*.xlsx
+*.docx
+*.webp
+*.yml
+*.yaml
+design-reference/
+.playwright-mcp/
+obsidian_vault/
