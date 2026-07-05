@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { motion, AnimatePresence } from "motion/react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Leaf } from "lucide-react";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -20,7 +20,7 @@ export function Navbar() {
       >
         <nav 
           aria-label="Main Navigation"
-          className="flex items-center justify-between gap-8 px-6 py-3 rounded-full bg-background/70 backdrop-blur-2xl border border-border/50 shadow-[0_8px_32px_rgba(0,0,0,0.08)] supports-[backdrop-filter]:bg-background/60"
+          className="flex items-center justify-between gap-8 px-6 py-3 rounded-full bg-background/50 backdrop-blur-2xl border border-border/50 shadow-[0_8px_32px_rgba(0,0,0,0.08)] supports-[backdrop-filter]:bg-background/40"
         >
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 transition-transform active:scale-95 shrink-0">
@@ -31,9 +31,12 @@ export function Navbar() {
               height={56} 
               className="object-contain"
             />
-            <span className="font-heading font-bold text-xl md:text-2xl text-primary tracking-tight">
-              NirogiTanman
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-heading font-bold text-xl md:text-2xl text-primary tracking-tight">
+                NirogiTanman
+              </span>
+              <Leaf className="h-5 w-5 text-primary" strokeWidth={1.5} />
+            </div>
           </Link>
 
           {/* Desktop Links */}

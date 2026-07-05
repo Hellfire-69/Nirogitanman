@@ -8,9 +8,9 @@ export function Footer() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-sm">
           <div className="col-span-1 md:col-span-2">
-            <Link href="/" className="inline-flex items-center space-x-2 font-heading font-bold text-xl text-primary mb-4">
-              <Leaf className="h-6 w-6" />
+            <Link href="/" className="inline-flex items-center gap-1.5 font-heading font-bold text-xl text-primary mb-4">
               <span>NirogiTanman</span>
+              <Leaf className="h-5 w-5" strokeWidth={1.5} />
             </Link>
             <p className="text-muted-foreground max-w-sm">
               An integrative wellness platform bridging Ayurveda, Yoga, and Modern Medicine for a balanced, healthy life.

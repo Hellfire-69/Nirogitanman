@@ -27,36 +27,38 @@ export function HowItWorks() {
     <section className="py-24 bg-muted/30">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4 [text-wrap:balance]">
+          <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4 text-balance">
             How NirogiTanman Works
           </h2>
-          <p className="text-muted-foreground md:text-lg [text-wrap:balance]">
+          <p className="text-stone-500 md:text-lg text-balance max-w-md mx-auto">
             A simple, structured approach to integrating holistic wellness into your daily routine.
           </p>
         </div>
 
-        <div className="relative">
-          {/* Connector Line for Desktop */}
-          <div className="hidden md:block absolute top-12 left-[10%] right-[10%] h-0.5 bg-border z-0"></div>
+        <div className="relative z-0 flex flex-col md:flex-row justify-between items-start w-full gap-8 max-w-5xl mx-auto">
+          {/* Connector Line (Absolute) */}
+          <div className="hidden md:block absolute top-[3rem] left-[15%] right-[15%] h-[2px] bg-gray-200 z-[-1] -translate-y-1/2"></div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
-            {steps.map((step, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: idx * 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="flex flex-col items-center text-center space-y-4"
-              >
-                <div className="w-24 h-24 rounded-full bg-background border-4 border-muted flex items-center justify-center shadow-sm">
-                  {step.icon}
-                </div>
-                <h3 className="font-heading text-xl font-bold">{step.title}</h3>
-                <p className="text-muted-foreground text-sm">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+          {steps.map((step, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: idx * 0.15, ease: "easeOut" }}
+              className="relative z-10 flex flex-col items-center text-center flex-1"
+            >
+              <div className="relative z-10 w-24 h-24 rounded-full bg-background border-2 border-gray-200 flex items-center justify-center shadow-sm mb-6">
+                {step.icon}
+              </div>
+              <h3 className="font-heading text-xl font-bold text-foreground mb-3">
+                {step.title}
+              </h3>
+              <p className="text-stone-500 text-sm max-w-[250px] mx-auto text-balance">
+                {step.desc}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
