@@ -9,7 +9,7 @@ export interface Expert {
 }
 
 export async function getExperts(): Promise<Expert[]> {
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
   const { data, error } = await supabase
     .from("experts")
     .select("id, full_name, specialty, bio, photo_url")

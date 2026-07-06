@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { getAuthUser } from "@/lib/auth";
 
 const UUID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -20,7 +20,12 @@ export async function bookSlot(input: BookSlotInput) {
     return { success: false as const, error: "Invalid request." };
   }
 
-  const supabase = getSupabaseServerClient();
+  const user = await getAuthUser();
+  if (!user) {
+    return { success: false as const, error: "You must be logged in to book a slot." };
+  }
+
+  const supabase = await getSupabaseServerClient();
 
   // Atomic claim: this UPDATE only affects a row if is_booked is still false,
   // so under concurrent requests for the same slot exactly one succeeds — the
@@ -45,7 +50,7 @@ export async function bookSlot(input: BookSlotInput) {
   }
 
   const { error: insertError } = await supabase.from("bookings").insert({
-    user_id: DEMO_USER_ID,
+    user_id: user.id,
     slot_id: parsed.data.slotId,
     status: "confirmed",
   });

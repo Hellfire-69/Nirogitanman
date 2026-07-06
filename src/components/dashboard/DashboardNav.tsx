@@ -14,8 +14,10 @@ import {
   User,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logout } from "@/lib/actions/auth";
 
 const NAV_ITEMS = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -78,6 +80,13 @@ export function DashboardNav() {
             );
           })}
         </nav>
+        <button
+          onClick={() => logout()}
+          className="mt-auto flex items-center gap-3 rounded-xl px-4 py-2.5 mx-4 mb-6 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <LogOut className="h-4 w-4" strokeWidth={1.75} />
+          Log out
+        </button>
       </aside>
 
       {/* Mobile top bar */}
@@ -132,6 +141,16 @@ export function DashboardNav() {
                   </Link>
                 );
               })}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  logout();
+                }}
+                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-muted"
+              >
+                <LogOut className="h-4 w-4" strokeWidth={1.75} />
+                Log out
+              </button>
             </nav>
           </motion.div>
         )}

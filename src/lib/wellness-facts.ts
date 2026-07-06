@@ -9,7 +9,7 @@ export interface WellnessFact {
 export async function getWellnessFactsByTags(tags: string[]): Promise<WellnessFact[]> {
   if (tags.length === 0) return [];
 
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
   const { data, error } = await supabase
     .from("wellness_facts")
     .select("topic, vetted_content, source")

@@ -1,5 +1,5 @@
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { getAuthUser } from "@/lib/auth";
 
 export interface DashboardUser {
   id: string;
@@ -50,24 +50,30 @@ export interface ActiveDietPlan {
 }
 
 export async function getDashboardUser(): Promise<DashboardUser | null> {
-  const supabase = getSupabaseServerClient();
+  const user = await getAuthUser();
+  if (!user) return null;
+
+  const supabase = await getSupabaseServerClient();
   const { data } = await supabase
     .from("users")
     .select("id, full_name, email, avatar_url, dosha_type")
-    .eq("id", DEMO_USER_ID)
+    .eq("id", user.id)
     .maybeSingle();
 
   return data;
 }
 
 export async function getUpcomingBookings(): Promise<UpcomingBooking[]> {
-  const supabase = getSupabaseServerClient();
+  const user = await getAuthUser();
+  if (!user) return [];
+
+  const supabase = await getSupabaseServerClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(
       `id, status, slots ( starts_at, doctors ( full_name, specialty, photo_url ) )`
     )
-    .eq("user_id", DEMO_USER_ID);
+    .eq("user_id", user.id);
 
   if (error || !data) return [];
 
@@ -96,11 +102,14 @@ export async function getUpcomingBookings(): Promise<UpcomingBooking[]> {
 }
 
 export async function getActiveDietPlan(): Promise<ActiveDietPlan | null> {
-  const supabase = getSupabaseServerClient();
+  const user = await getAuthUser();
+  if (!user) return null;
+
+  const supabase = await getSupabaseServerClient();
   const { data } = await supabase
     .from("diet_plans")
     .select("id, created_at, intake_data, generated_plan")
-    .eq("user_id", DEMO_USER_ID)
+    .eq("user_id", user.id)
     .eq("is_active", true)
     .order("created_at", { ascending: false })
     .limit(1)

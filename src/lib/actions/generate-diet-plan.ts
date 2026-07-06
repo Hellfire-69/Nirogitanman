@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { getAuthUser } from "@/lib/auth";
 import { generateDietPlanSchema, buildFactTags, type GenerateDietPlanInput } from "@/lib/diet-plan-schema";
 import { getWellnessFactsByTags } from "@/lib/wellness-facts";
 import { generateDietPlanFromFacts } from "@/lib/groq";
@@ -40,12 +40,17 @@ export async function generateDietPlan(input: GenerateDietPlanInput) {
     };
   }
 
-  const supabase = getSupabaseServerClient();
+  const user = await getAuthUser();
+  if (!user) {
+    return { success: false as const, error: "You must be logged in to generate a diet plan." };
+  }
+
+  const supabase = await getSupabaseServerClient();
 
   const { data: inserted, error: insertError } = await supabase
     .from("diet_plans")
     .insert({
-      user_id: DEMO_USER_ID,
+      user_id: user.id,
       intake_data: {
         goal: parsed.data.goal,
         dosha_preference: parsed.data.doshaPreference,
@@ -64,7 +69,7 @@ export async function generateDietPlan(input: GenerateDietPlanInput) {
   await supabase
     .from("diet_plans")
     .update({ is_active: false })
-    .eq("user_id", DEMO_USER_ID)
+    .eq("user_id", user.id)
     .neq("id", inserted.id);
 
   revalidatePath("/dashboard");

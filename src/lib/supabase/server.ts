@@ -1,9 +1,28 @@
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
-export function getSupabaseServerClient() {
-  return createClient(
+export async function getSupabaseServerClient() {
+  const cookieStore = await cookies();
+
+  return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { auth: { persistSession: false } }
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Called from a Server Component without a mutable cookie store;
+            // safe to ignore since middleware refreshes the session.
+          }
+        },
+      },
+    }
   );
 }

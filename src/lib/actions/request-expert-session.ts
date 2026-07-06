@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { getAuthUser } from "@/lib/auth";
 
 const UUID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -21,9 +21,14 @@ export async function requestExpertSession(input: RequestSessionInput) {
     return { success: false as const, error: "Invalid form data." };
   }
 
-  const supabase = getSupabaseServerClient();
+  const user = await getAuthUser();
+  if (!user) {
+    return { success: false as const, error: "You must be logged in to request a session." };
+  }
+
+  const supabase = await getSupabaseServerClient();
   const { error } = await supabase.from("expert_session_requests").insert({
-    user_id: DEMO_USER_ID,
+    user_id: user.id,
     expert_id: parsed.data.expertId,
     preferred_time: parsed.data.preferredTime,
     message: parsed.data.message || null,
