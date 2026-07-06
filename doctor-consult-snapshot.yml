@@ -1,0 +1,90 @@
+- generic [active] [ref=f12e1]:
+  - generic [ref=f12e2]:
+    - complementary [ref=f12e3]:
+      - link "NirogiTanman Logo NirogiTanman" [ref=f12e4] [cursor=pointer]:
+        - /url: /
+        - img "NirogiTanman Logo" [ref=f12e5]
+        - generic [ref=f12e6]: NirogiTanman
+      - navigation "Dashboard Navigation" [ref=f12e7]:
+        - link "Overview" [ref=f12e8] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f12e9]
+          - generic [ref=f12e14]: Overview
+        - link "Expert Consult" [ref=f12e15] [cursor=pointer]:
+          - /url: /consult/expert
+          - img [ref=f12e16]
+          - generic [ref=f12e21]: Expert Consult
+        - link "Doctor Consult" [ref=f12e22] [cursor=pointer]:
+          - /url: /consult/doctor
+          - img [ref=f12e24]
+          - generic [ref=f12e28]: Doctor Consult
+        - link "Diet Plan" [ref=f12e29] [cursor=pointer]:
+          - /url: /diet-plan
+          - img [ref=f12e30]
+          - generic [ref=f12e35]: Diet Plan
+        - link "AI Assistant" [ref=f12e36] [cursor=pointer]:
+          - /url: /assistant
+          - img [ref=f12e37]
+          - generic [ref=f12e39]: AI Assistant
+        - link "Profile" [ref=f12e40] [cursor=pointer]:
+          - /url: /profile
+          - img [ref=f12e41]
+          - generic [ref=f12e44]: Profile
+    - main [ref=f12e45]:
+      - generic [ref=f12e47]:
+        - generic [ref=f12e48]:
+          - paragraph [ref=f12e49]: Doctor Consult
+          - heading "Book a doctor consultation" [level=1] [ref=f12e50]
+          - paragraph [ref=f12e51]: Choose a doctor and pick an available slot. Your booking is confirmed instantly.
+        - generic [ref=f12e52]:
+          - generic [ref=f12e53]:
+            - generic [ref=f12e54]:
+              - generic [ref=f12e56]: AR
+              - generic [ref=f12e57]:
+                - paragraph [ref=f12e58]: Dr. Ananya Rao
+                - generic [ref=f12e59]: General Physician (Allopathy)
+            - generic [ref=f12e60]:
+              - paragraph [ref=f12e61]: Available slots
+              - generic [ref=f12e62]:
+                - button "Thu, 9 Jul, 12:30 pm" [ref=f12e63]
+                - button "Tue, 14 Jul, 9:00 am" [ref=f12e64]
+                - button "Fri, 17 Jul, 9:30 am" [ref=f12e65]
+          - generic [ref=f12e66]:
+            - generic [ref=f12e67]:
+              - generic [ref=f12e69]: PS
+              - generic [ref=f12e70]:
+                - paragraph [ref=f12e71]: Dr. Priya Sharma
+                - generic [ref=f12e72]: Dermatology & Skin Care
+            - generic [ref=f12e73]:
+              - paragraph [ref=f12e74]: Available slots
+              - generic [ref=f12e75]:
+                - button "Fri, 10 Jul, 12:00 pm" [ref=f12e76]
+                - button "Sun, 12 Jul, 2:00 pm" [ref=f12e77]
+                - button "Wed, 15 Jul, 3:30 pm" [ref=f12e78]
+          - generic [ref=f12e79]:
+            - generic [ref=f12e80]:
+              - generic [ref=f12e82]: RM
+              - generic [ref=f12e83]:
+                - paragraph [ref=f12e84]: Dr. Rohit Mehta
+                - generic [ref=f12e85]: Nutrition & Lifestyle Medicine
+            - generic [ref=f12e86]:
+              - paragraph [ref=f12e87]: Available slots
+              - generic [ref=f12e88]:
+                - button "Fri, 10 Jul, 11:30 am" [ref=f12e89]
+                - button "Sat, 11 Jul, 3:00 pm" [ref=f12e90]
+                - button "Sat, 18 Jul, 11:00 am" [ref=f12e91]
+          - generic [ref=f12e92]:
+            - generic [ref=f12e93]:
+              - generic [ref=f12e95]: VN
+              - generic [ref=f12e96]:
+                - paragraph [ref=f12e97]: Dr. Vikram Nair
+                - generic [ref=f12e98]: Ayurveda & Panchakarma
+            - generic [ref=f12e99]:
+              - paragraph [ref=f12e100]: Available slots
+              - generic [ref=f12e101]:
+                - button "Thu, 9 Jul, 11:00 am" [ref=f12e102]
+                - button "Mon, 13 Jul, 10:30 am" [ref=f12e103]
+                - button "Thu, 16 Jul, 2:30 pm" [ref=f12e104]
+  - button "Open Next.js Dev Tools" [ref=f12e110] [cursor=pointer]:
+    - img [ref=f12e111]
+  - alert [ref=f12e114]

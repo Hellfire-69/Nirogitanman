@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -31,7 +30,6 @@ export default function RootLayout({
       className={`${fraunces.variable} ${bricolageGrotesque.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-background text-foreground">
-        <Navbar />
         {children}
       </body>
     </html>
