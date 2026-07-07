@@ -62,31 +62,31 @@ export function ChatAssistant() {
           {messages.map((message, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className={`flex items-start gap-2.5 ${
+              initial={{ opacity: 0, y: 12, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className={`flex items-start gap-3 mb-2 ${
                 message.role === "user" ? "flex-row-reverse" : ""
               }`}
             >
               <div
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
+                className={`flex size-8 shrink-0 items-center justify-center rounded-full shadow-sm ${
                   message.role === "user"
                     ? "bg-primary text-primary-foreground"
-                    : "bg-secondary/20 text-secondary"
+                    : "bg-secondary/20 text-secondary ring-1 ring-secondary/30"
                 }`}
               >
                 {message.role === "user" ? (
-                  <User className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  <User className="h-4 w-4" strokeWidth={1.75} />
                 ) : (
-                  <Sparkles className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  <Sparkles className="h-4 w-4" strokeWidth={1.75} />
                 )}
               </div>
               <div
-                className={`rounded-2xl px-3.5 py-2.5 text-sm max-w-[80%] ${
+                className={`rounded-[1.5rem] px-5 py-3.5 text-sm leading-relaxed max-w-[85%] sm:max-w-[75%] ${
                   message.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card/70 border border-border/50 text-foreground"
+                    ? "bg-primary text-primary-foreground rounded-tr-sm shadow-md"
+                    : "bg-card/70 border border-border/50 text-foreground rounded-tl-sm shadow-sm"
                 }`}
               >
                 {message.content}
@@ -96,14 +96,23 @@ export function ChatAssistant() {
         </AnimatePresence>
 
         {isSending && (
-          <div className="flex items-start gap-2.5">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary/20 text-secondary">
-              <Sparkles className="h-3.5 w-3.5" strokeWidth={1.75} />
+          <motion.div 
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-start gap-3 mb-2"
+          >
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary/20 text-secondary ring-1 ring-secondary/30 shadow-sm">
+              <Sparkles className="h-4 w-4" strokeWidth={1.75} />
             </div>
-            <div className="rounded-2xl px-3.5 py-2.5 text-sm bg-card/70 border border-border/50 text-muted-foreground">
-              Thinking...
+            <div className="rounded-[1.5rem] rounded-tl-sm px-5 py-3.5 text-sm bg-card/70 border border-border/50 text-muted-foreground shadow-sm flex items-center gap-1.5">
+              Thinking
+              <span className="flex gap-0.5">
+                <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1.4, delay: 0 }}>.</motion.span>
+                <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1.4, delay: 0.2 }}>.</motion.span>
+                <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1.4, delay: 0.4 }}>.</motion.span>
+              </span>
             </div>
-          </div>
+          </motion.div>
         )}
 
         <div ref={scrollRef} />
@@ -116,7 +125,7 @@ export function ChatAssistant() {
           event.preventDefault();
           handleSend();
         }}
-        className="flex items-end gap-2"
+        className="flex items-end gap-3 bg-black/5 dark:bg-white/5 p-2 rounded-[2rem] border border-black/5 dark:border-white/10 focus-within:bg-black/10 dark:focus-within:bg-white/10 focus-within:ring-1 focus-within:ring-primary/20 transition-all duration-300"
       >
         <Textarea
           value={input}
@@ -127,12 +136,16 @@ export function ChatAssistant() {
               handleSend();
             }
           }}
-          placeholder="Type your message..."
-          className="min-h-11"
+          placeholder="Ask me anything..."
+          className="min-h-12 bg-transparent border-transparent focus-visible:ring-0 shadow-none resize-none px-4 py-3 rounded-[1.5rem]"
           disabled={isSending}
         />
-        <Button type="submit" disabled={isSending || !input.trim()}>
-          <Send className="h-4 w-4" />
+        <Button 
+          type="submit" 
+          disabled={isSending || !input.trim()}
+          className="rounded-full size-12 shrink-0 bg-primary hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50"
+        >
+          <Send className="h-5 w-5 ml-0.5" />
         </Button>
       </form>
     </GlassCard>

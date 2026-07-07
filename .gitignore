@@ -38,7 +38,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
 # AI / Antigravity
 .agents/
@@ -46,6 +45,7 @@ next-env.d.ts
 obsidian_vault/
 mcp_config.json
 .mcp.json
+.mcp/
 
 # Graphify
 graphify-out/

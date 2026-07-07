@@ -61,7 +61,7 @@ export function GreetingHeader({ fullName, doshaType }: GreetingHeaderProps) {
         {/* Name + dosha badge */}
         <div className="flex flex-wrap items-end gap-3">
           <h1
-            className="text-4xl md:text-5xl font-semibold tracking-tight text-foreground leading-none"
+            className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-foreground leading-[1.1]"
             style={{ fontFamily: "var(--font-fraunces)" }}
           >
             {firstName}

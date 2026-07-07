@@ -90,24 +90,29 @@ export function RequestSessionForm({ experts }: RequestSessionFormProps) {
   }
 
   return (
-    <GlassCard className="p-6">
-      <h3 className="font-heading text-lg font-medium text-foreground mb-4">
-        Request a Session
-      </h3>
+    <GlassCard className="p-8 md:p-10">
+      <div className="mb-8">
+        <h3 className="font-heading text-2xl font-semibold text-foreground tracking-tight">
+          Request a Session
+        </h3>
+        <p className="text-sm text-muted-foreground mt-2">
+          Fill in your details below and we&apos;ll schedule a session with your chosen expert.
+        </p>
+      </div>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <FieldGroup>
+        <FieldGroup className="gap-6">
           <Controller
             control={control}
             name="expertId"
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="expertId">Expert</FieldLabel>
+              <Field data-invalid={fieldState.invalid} className="gap-2">
+                <FieldLabel htmlFor="expertId" className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">Expert</FieldLabel>
                 <Select
                   items={expertItems}
                   value={field.value || null}
                   onValueChange={(value) => field.onChange(value ?? "")}
                 >
-                  <SelectTrigger id="expertId" className="w-full">
+                  <SelectTrigger id="expertId" className="w-full h-12 bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/10 dark:hover:bg-white/10 transition-colors focus:ring-primary/20 focus:border-primary/30">
                     <SelectValue placeholder="Choose an expert" />
                   </SelectTrigger>
                   <SelectContent>
@@ -127,15 +132,16 @@ export function RequestSessionForm({ experts }: RequestSessionFormProps) {
             control={control}
             name="preferredTime"
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="preferredTime">Preferred time</FieldLabel>
+              <Field data-invalid={fieldState.invalid} className="gap-2">
+                <FieldLabel htmlFor="preferredTime" className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">Preferred time</FieldLabel>
                 <Input
                   id="preferredTime"
                   placeholder="e.g. Weekday mornings, or Tue 10 Jul at 5pm"
                   aria-invalid={fieldState.invalid}
+                  className="h-12 bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/10 dark:hover:bg-white/10 transition-colors focus:bg-transparent focus:ring-primary/20 focus:border-primary/30"
                   {...field}
                 />
-                <FieldDescription>
+                <FieldDescription className="text-xs opacity-70 mt-1">
                   Share any dates/times that work — the expert&apos;s team will confirm.
                 </FieldDescription>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -147,12 +153,13 @@ export function RequestSessionForm({ experts }: RequestSessionFormProps) {
             control={control}
             name="message"
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="message">Message (optional)</FieldLabel>
+              <Field data-invalid={fieldState.invalid} className="gap-2">
+                <FieldLabel htmlFor="message" className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">Message (optional)</FieldLabel>
                 <Textarea
                   id="message"
                   placeholder="Anything you'd like the expert to know beforehand"
                   aria-invalid={fieldState.invalid}
+                  className="min-h-[120px] bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/10 dark:hover:bg-white/10 transition-colors focus:bg-transparent focus:ring-primary/20 focus:border-primary/30 resize-none p-4"
                   {...field}
                 />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -161,12 +168,21 @@ export function RequestSessionForm({ experts }: RequestSessionFormProps) {
           />
 
           {submitState.status === "error" && (
-            <p className="text-sm text-destructive">{submitState.message}</p>
+            <p className="text-sm font-medium text-destructive mt-2">{submitState.message}</p>
           )}
 
-          <Button type="submit" disabled={isSubmitting} className="w-fit">
-            {isSubmitting ? "Sending..." : "Send request"}
-          </Button>
+          <div className="pt-4">
+            <Button 
+              type="submit" 
+              disabled={isSubmitting} 
+              className="group relative rounded-full px-8 py-6 text-base w-full sm:w-auto overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                {isSubmitting ? "Sending..." : "Send request"}
+              </span>
+              <div className="absolute inset-0 bg-white/20 translate-y-full transition-transform duration-300 group-hover:translate-y-0" />
+            </Button>
+          </div>
         </FieldGroup>
       </form>
     </GlassCard>

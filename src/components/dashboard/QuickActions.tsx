@@ -57,29 +57,30 @@ export function QuickActions() {
           whileHover={{ y: -3, scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
         >
-          <Link href={action.href} className="block h-full">
+          <Link href={action.href} className="block h-full outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-[2rem]">
             <GlassCard
-              className={`group flex flex-col gap-3 p-5 h-full transition-all duration-200 border-border/50 ${action.accent.border} hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)]`}
+              className={`group flex flex-col gap-4 p-6 h-full transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-[1.02] ${action.accent.border} hover:shadow-[0_16px_40px_rgba(0,0,0,0.06)]`}
             >
-              <div
-                className={`flex size-10 items-center justify-center rounded-full ${action.accent.bg} ${action.accent.text}`}
-              >
-                <action.icon className="h-5 w-5" strokeWidth={1.75} />
+              <div className="flex items-center justify-between">
+                <div
+                  className={`flex size-12 items-center justify-center rounded-full transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-110 group-hover:translate-x-1 group-hover:-translate-y-1 ${action.accent.bg} ${action.accent.text}`}
+                >
+                  <action.icon className="h-5 w-5" strokeWidth={1.5} />
+                </div>
+                <div className="flex size-8 items-center justify-center rounded-full bg-black/5 dark:bg-white/5 opacity-0 -translate-x-2 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:opacity-100 group-hover:translate-x-0">
+                  <ArrowRight className="h-4 w-4 text-foreground" strokeWidth={1.5} />
+                </div>
               </div>
-              <div className="flex-1">
+              <div className="flex-1 mt-2">
                 <p
-                  className="text-base font-medium text-foreground"
+                  className="text-xl font-semibold text-foreground tracking-tight"
                   style={{ fontFamily: "var(--font-fraunces)" }}
                 >
                   {action.label}
                 </p>
-                <p className="text-sm text-muted-foreground mt-0.5">
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
                   {action.description}
                 </p>
-              </div>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-                <span>Open</span>
-                <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
               </div>
             </GlassCard>
           </Link>

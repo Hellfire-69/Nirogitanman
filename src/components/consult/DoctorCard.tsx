@@ -59,33 +59,38 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
   }
 
   return (
-    <GlassCard className="p-5">
-      <div className="flex items-start gap-4">
-        <Avatar size="lg">
-          <AvatarFallback>{initials(doctor.full_name)}</AvatarFallback>
+    <GlassCard className="group p-6 transition-all duration-500 hover:scale-[1.01] hover:shadow-[0_16px_40px_rgba(0,0,0,0.06)]">
+      <div className="flex items-start gap-5">
+        <Avatar className="h-16 w-16 ring-2 ring-background shadow-md">
+          <AvatarFallback className="bg-[oklch(0.4_0.1_160)]/10 text-[oklch(0.4_0.1_160)] font-medium text-lg">
+            {initials(doctor.full_name)}
+          </AvatarFallback>
         </Avatar>
-        <div className="flex-1 min-w-0">
-          <p className="font-heading text-base font-medium text-foreground truncate">
+        <div className="flex-1 min-w-0 pt-1">
+          <p className="font-heading text-xl font-semibold text-foreground truncate tracking-tight">
             {doctor.full_name}
           </p>
-          <Badge variant="outline" className="mt-1">
+          <Badge variant="secondary" className="mt-2 bg-black/5 dark:bg-white/10 text-foreground/80 hover:bg-black/10 dark:hover:bg-white/20 border-transparent">
             {doctor.specialty}
           </Badge>
         </div>
       </div>
 
-      <div className="mt-4">
-        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2">
-          Available slots
-        </p>
+      <div className="mt-6 pt-6 border-t border-border/40">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+            Available Slots
+          </p>
+          <Badge variant="outline" className="h-5 text-[9px] uppercase border-[oklch(0.4_0.1_160)]/20 text-[oklch(0.4_0.1_160)] bg-[oklch(0.4_0.1_160)]/5">Live</Badge>
+        </div>
 
         {slots.length === 0 ? (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <CalendarX2 className="h-4 w-4" strokeWidth={1.75} />
+          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg border border-border/50">
+            <CalendarX2 className="h-4 w-4 opacity-50" strokeWidth={1.5} />
             No slots currently available.
           </div>
         ) : (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {slots.map((slot) => (
               <Button
                 key={slot.id}
@@ -94,6 +99,7 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
                 size="sm"
                 disabled={pendingSlotId !== null}
                 onClick={() => handleBook(slot.id, formatDateTime(slot.starts_at))}
+                className="rounded-full transition-all duration-300 hover:border-[oklch(0.4_0.1_160)] hover:text-[oklch(0.4_0.1_160)] hover:shadow-sm active:scale-95"
               >
                 {pendingSlotId === slot.id ? "Booking..." : formatDateTime(slot.starts_at)}
               </Button>
@@ -102,13 +108,17 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
         )}
 
         {feedback?.type === "success" && (
-          <p className="mt-3 flex items-center gap-1.5 text-sm text-primary">
-            <CheckCircle2 className="h-4 w-4" strokeWidth={1.75} />
-            Booked for {feedback.slotLabel}.
-          </p>
+          <div className="mt-4 flex items-start gap-2.5 bg-[oklch(0.4_0.1_160)]/5 p-3 rounded-xl border border-[oklch(0.4_0.1_160)]/10">
+            <CheckCircle2 className="h-5 w-5 text-[oklch(0.4_0.1_160)] shrink-0" strokeWidth={1.5} />
+            <p className="text-sm text-[oklch(0.4_0.1_160)] font-medium">
+              Confirmed for {feedback.slotLabel}.
+            </p>
+          </div>
         )}
         {feedback?.type === "error" && (
-          <p className="mt-3 text-sm text-destructive">{feedback.message}</p>
+          <div className="mt-4 p-3 rounded-xl bg-destructive/5 border border-destructive/10">
+            <p className="text-sm text-destructive">{feedback.message}</p>
+          </div>
         )}
       </div>
     </GlassCard>

@@ -32,29 +32,41 @@ const ACCENT_CLASSES = {
 
 function StatCard({ icon: Icon, label, value, sub, accent, delay }: StatCardProps) {
   const classes = ACCENT_CLASSES[accent];
+  
+  // Radial highlights for each accent
+  const radialBg = 
+    accent === "teal" ? "radial-gradient(circle at 100% 0%, oklch(0.4 0.1 160 / 0.08) 0%, transparent 60%)" :
+    accent === "terracotta" ? "radial-gradient(circle at 100% 0%, oklch(0.65 0.15 45 / 0.08) 0%, transparent 60%)" :
+    "radial-gradient(circle at 100% 0%, rgba(150,150,150, 0.05) 0%, transparent 60%)";
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
+      className="h-full"
     >
-      <GlassCard className="flex flex-col gap-3 p-5 h-full">
-        <div className={cn("flex size-10 items-center justify-center rounded-full", classes.icon)}>
-          <Icon className="h-5 w-5" strokeWidth={1.75} />
+      <GlassCard className="flex flex-col gap-4 p-6 h-full relative overflow-hidden group">
+        <div 
+          className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-500 opacity-50 group-hover:opacity-100" 
+          style={{ background: radialBg }} 
+        />
+        <div className={cn("relative z-10 flex size-12 items-center justify-center rounded-full transition-transform duration-500 group-hover:scale-110", classes.icon)}>
+          <Icon className="h-6 w-6" strokeWidth={1.5} />
         </div>
-        <div className="flex flex-col gap-0.5">
+        <div className="relative z-10 flex flex-col gap-1 mt-auto">
           <span
             className={cn(
-              "font-heading text-3xl font-semibold leading-none tracking-tight",
+              "font-heading text-4xl lg:text-5xl font-semibold leading-[1.1] tracking-tight",
               classes.value
             )}
             style={{ fontFamily: "var(--font-fraunces)" }}
           >
             {value}
           </span>
-          <span className="text-sm font-medium text-foreground mt-1">{label}</span>
+          <span className="text-sm font-medium text-foreground tracking-wide uppercase text-[10px] opacity-80 mt-2">{label}</span>
           {sub && (
-            <span className="text-xs text-muted-foreground leading-snug mt-0.5">{sub}</span>
+            <span className="text-xs text-muted-foreground leading-snug">{sub}</span>
           )}
         </div>
       </GlassCard>

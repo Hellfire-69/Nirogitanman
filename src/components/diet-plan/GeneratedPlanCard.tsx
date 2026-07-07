@@ -1,4 +1,4 @@
-import { Salad } from "lucide-react";
+import { Salad, Coffee, Sun, Utensils, Apple } from "lucide-react";
 import { GlassCard } from "@/components/dashboard/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty";
@@ -53,15 +53,28 @@ export function GeneratedPlanCard({ plan }: GeneratedPlanCardProps) {
       <p className="text-sm text-muted-foreground mb-4">{plan.generated_plan.summary}</p>
 
       {day && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-4">
-          {Object.entries(day.meals).map(([meal, item]) => (
-            <div key={meal} className="rounded-xl border border-border/50 bg-card/50 px-3 py-2.5">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                {meal}
-              </p>
-              <p className="text-xs text-foreground mt-1">{item}</p>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {Object.entries(day.meals).map(([meal, item]) => {
+            const Icon = meal === "breakfast" ? Coffee : meal === "lunch" ? Sun : meal === "dinner" ? Utensils : Apple;
+            return (
+              <div key={meal} className="group relative overflow-hidden rounded-[1.5rem] bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 transition-all duration-300 hover:bg-black/[0.07] dark:hover:bg-white/[0.07] hover:border-black/10 dark:hover:border-white/20">
+                <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform duration-500 group-hover:scale-150 group-hover:rotate-12">
+                  <Icon className="w-16 h-16" />
+                </div>
+                <div className="relative z-10 flex items-center gap-2 mb-3">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-background shadow-sm text-foreground">
+                    <Icon className="w-4 h-4" strokeWidth={1.75} />
+                  </div>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    {meal}
+                  </p>
+                </div>
+                <p className="relative z-10 text-sm font-medium text-foreground leading-relaxed">
+                  {item}
+                </p>
+              </div>
+            );
+          })}
         </div>
       )}
 
