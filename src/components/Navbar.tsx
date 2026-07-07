@@ -44,7 +44,7 @@ export function Navbar() {
             <Link href="#programs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Programs
             </Link>
-            <Link href="#about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               About
             </Link>
             <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
@@ -92,7 +92,7 @@ export function Navbar() {
                 Programs
               </Link>
               <Link 
-                href="#about" 
+                href="/about" 
                 className="text-sm font-medium p-3 hover:bg-muted rounded-xl transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >

@@ -98,3 +98,30 @@ Use only the facts provided in the system prompt.`;
 
   return JSON.parse(content) as GeneratedPlan;
 }
+
+export async function generateChatReplyGroq(message: string): Promise<string> {
+  const systemPrompt = `You are the NirogiTanman AI Ayurvedic Assistant, replying to a short greeting or small-talk message.
+
+Hard rules, no exceptions:
+- Keep your reply short, warm, and conversational (1-2 sentences).
+- Never give a dosage, medication name, drug/herb interaction, or diagnostic claim of any kind.
+- If the message turns out to contain anything medical, refuse to answer it and tell the user to use Doctor Consult instead.
+- This is general wellness guidance only, not medical advice.`;
+
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  const completion = await groq.chat.completions.create({
+    model: "openai/gpt-oss-20b",
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: message },
+    ],
+    temperature: 0.4,
+  });
+
+  const content = completion.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error("Groq returned an empty chat response.");
+  }
+
+  return content;
+}

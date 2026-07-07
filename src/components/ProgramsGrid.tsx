@@ -1,10 +1,15 @@
+/**
+ * ProgramsGrid — Landing page "Our Programs" section.
+ * Renders a swipeable, animated card carousel of the 5 Ayurvedic health programs
+ * alongside a numbered navigation list; each card links to the Expert Consult flow.
+ */
 "use client";
 
-import React, { useRef, useState, useMemo } from "react";
-import { motion, useScroll, useTransform, useMotionValueEvent, MotionValue } from "motion/react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
-import { ArrowRight, ArrowUp, ArrowDown } from "lucide-react";
 import Link from "next/link";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 const programs = [
   {
@@ -34,246 +39,199 @@ const programs = [
   },
 ];
 
-const AnimatedProgramCard = ({ 
-  program, 
-  idx, 
-  scrollYProgress, 
-  activeIndex, 
-  total 
-}: { 
-  program: any, 
-  idx: number, 
-  scrollYProgress: MotionValue<number>, 
-  activeIndex: number, 
-  total: number 
-}) => {
-  const start = idx / total;
-  const end = (idx + 1) / total;
-  
-  // Crossfade mapping: fade in before it's active, fade out after
-  const fadeInStart = Math.max(0, start - 0.1);
-  const fadeOutEnd = Math.min(1, end + 0.1);
+const SWIPE_THRESHOLD = 80;
 
-  // Memoize input range to prevent continuous hook recalculation and garbage collection overhead
-  const inputRange = useMemo(() => [fadeInStart, start, end, fadeOutEnd], [fadeInStart, start, end, fadeOutEnd]);
-
-  // GPU-accelerated motion values with added depth cues (scale/rotation)
-  const opacity = useTransform(scrollYProgress, inputRange, [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, inputRange, [100, 0, 0, -100]);
-  const scale = useTransform(scrollYProgress, inputRange, [0.92, 1, 1, 1.05]);
-  const rotate = useTransform(scrollYProgress, inputRange, [3, 0, 0, -3]);
-
-  const isActive = activeIndex === idx;
-
-  return (
-    <motion.div 
-      style={{ 
-        opacity, 
-        y,
-        scale,
-        rotate,
-        pointerEvents: isActive ? "auto" : "none" 
-      }}
-      className="absolute inset-0 flex items-center justify-center p-8 will-change-transform"
-      aria-hidden={!isActive}
-    >
-      <div className="w-full max-w-[550px] aspect-[4/5] rounded-[2rem] overflow-hidden relative shadow-[0_20px_50px_rgba(0,0,0,0.15)] ring-1 ring-border/50 bg-background">
-        <Image 
-          src={program.image} 
-          alt={program.title} 
-          fill 
-          className="object-cover"
-          priority={idx === 0}
-          sizes="(max-width: 1200px) 50vw, 550px" 
-        />
-        {/* Brand-tinted deep teal scrim ensures 4.5:1 contrast while remaining intentional and premium */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#005346]/95 via-[#005346]/60 to-transparent"></div>
-        
-        <div className="absolute inset-0 flex flex-col justify-end p-10 lg:p-12 z-10">
-          <h3 className="font-heading text-3xl lg:text-4xl font-bold text-white mb-4 tracking-tight drop-shadow-sm">{program.title}</h3>
-          <p className="text-white/90 mb-8 text-lg leading-relaxed drop-shadow-sm">{program.desc}</p>
-          
-          {/* Nested CTA Architecture (Button-in-Button) */}
-          <Link 
-            href="/consult/expert" 
-            tabIndex={isActive ? 0 : -1}
-            className="group inline-flex items-center text-sm font-semibold bg-white text-black pl-6 pr-2 py-2 rounded-full hover:bg-gray-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] w-fit focus:outline-none focus-visible:ring-4 focus-visible:ring-primary shadow-xl active:scale-[0.98]"
-          >
-            Consult Expert 
-            <span className="ml-4 w-8 h-8 rounded-full bg-black/5 flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1 group-hover:-translate-y-[1px] group-hover:scale-105">
-              <ArrowRight className="w-4 h-4" />
-            </span>
-          </Link>
-        </div>
-      </div>
-    </motion.div>
-  );
+const cardVariants = {
+  enter: (direction: number) => ({
+    x: direction >= 0 ? 60 : -60,
+    opacity: 0,
+    rotate: direction >= 0 ? 6 : -6,
+    scale: 0.96,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    rotate: 0,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction >= 0 ? -220 : 220,
+    opacity: 0,
+    rotate: direction >= 0 ? -10 : 10,
+    scale: 0.92,
+    transition: { duration: 0.22, ease: [0.5, 0, 0.75, 0] as [number, number, number, number] },
+  }),
 };
 
 export function ProgramsGrid() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [[index, direction], setIndexDirection] = useState<[number, number]>([0, 1]);
+  const total = programs.length;
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const idx = Math.min(Math.floor(latest * programs.length), programs.length - 1);
-    if (idx !== activeIndex) {
-      setActiveIndex(idx);
-    }
-  });
-
-  const handleScrollTo = (index: number) => {
-    if (!containerRef.current) return;
-    const containerTop = containerRef.current.offsetTop;
-    const scrollableDistance = containerRef.current.scrollHeight - window.innerHeight;
-    const targetProgress = index / programs.length + (0.5 / programs.length);
-    const targetY = containerTop + scrollableDistance * targetProgress;
-    window.scrollTo({ top: targetY, behavior: "smooth" });
+  const paginate = (delta: number) => {
+    setIndexDirection(([current]) => [(current + delta + total) % total, delta]);
   };
 
+  const jumpTo = (target: number) => {
+    setIndexDirection(([current]) => [target, target >= current ? 1 : -1]);
+  };
+
+  const active = programs[index];
+  const peek = [1, 2].map((offset) => programs[(index + offset) % total]);
+
   return (
-    <>
-      {/* DESKTOP: Split Scroll-Driven Layout */}
-      <section 
-        ref={containerRef} 
-        id="programs-desktop" 
-        className="relative hidden md:block bg-background" 
-        style={{ height: `${programs.length * 100}vh` }}
-      >
-        <div className="sticky top-0 h-screen w-full flex items-center overflow-hidden">
-          <div className="container mx-auto px-6 lg:px-12 flex h-full py-32">
-            
-            {/* Left Column: Sticky Sidebar */}
-            <div className="w-[40%] flex flex-col justify-center pr-12 lg:pr-24 relative z-20">
-              <div className="mb-6 inline-flex w-fit items-center rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium bg-primary/10 text-primary">
-                Our Programs
-              </div>
-              <h2 className="font-heading text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
-                Targeted <br />Healing Paths
-              </h2>
-              <p className="text-muted-foreground text-lg mb-16 leading-relaxed">
-                Choose a specialized wellness program tailored to your unique biology and lifestyle goals.
-              </p>
-              
-              {/* Progress Indicator */}
-              <div className="flex flex-col space-y-10 relative pl-2">
-                <div className="absolute left-[23px] top-4 bottom-4 w-[2px] bg-border/60 z-0"></div>
-                
-                {programs.map((p, i) => (
-                  <button 
-                    key={i} 
-                    onClick={() => handleScrollTo(i)}
-                    className="flex items-center gap-6 z-10 relative text-left group w-fit focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg"
-                    aria-label={`Jump to ${p.title}`}
-                  >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] shadow-sm ${
-                      activeIndex === i 
-                        ? 'bg-primary ring-4 ring-primary/20 text-primary-foreground scale-110' 
-                        : 'bg-background border-[3px] border-border text-muted-foreground group-hover:border-primary/50'
-                    }`}>
-                      <span className="text-sm font-bold">{i + 1}</span>
-                    </div>
-                    <span className={`text-xl lg:text-2xl transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                      activeIndex === i 
-                        ? 'font-bold text-foreground tracking-tight translate-x-2' 
-                        : 'text-muted-foreground font-medium group-hover:text-foreground/80'
-                    }`}>
-                      {p.title}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Right Column: Scroll-Linked Cards */}
-            <div className="w-[60%] h-full relative flex items-center justify-center">
-              {programs.map((program, idx) => (
-                <AnimatedProgramCard 
-                  key={idx}
-                  program={program}
-                  idx={idx}
-                  scrollYProgress={scrollYProgress}
-                  activeIndex={activeIndex}
-                  total={programs.length}
-                />
-              ))}
-            </div>
-            
-            {/* Manual Controls */}
-            <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-30">
-              <button 
-                onClick={() => handleScrollTo(Math.max(activeIndex - 1, 0))}
-                disabled={activeIndex === 0}
-                aria-label="Scroll to previous program"
-                className="w-12 h-12 rounded-full bg-background/80 backdrop-blur-md border border-border flex items-center justify-center text-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-muted shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-30 disabled:cursor-not-allowed active:scale-95"
-              >
-                <ArrowUp className="w-5 h-5" />
-              </button>
-              <button 
-                onClick={() => handleScrollTo(Math.min(activeIndex + 1, programs.length - 1))}
-                disabled={activeIndex === programs.length - 1}
-                aria-label="Scroll to next program"
-                className="w-12 h-12 rounded-full bg-background/80 backdrop-blur-md border border-border flex items-center justify-center text-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-muted shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-30 disabled:cursor-not-allowed active:scale-95"
-              >
-                <ArrowDown className="w-5 h-5" />
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* MOBILE: Standard Vertical Stack Layout */}
-      <section id="programs-mobile" className="md:hidden py-24 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="mb-4 inline-flex items-center rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium bg-primary/10 text-primary">
+    <section id="programs" className="bg-background py-24">
+      <div className="container mx-auto px-6 lg:px-12">
+        <div className="grid gap-16 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] md:items-center">
+          {/* Copy + navigation list */}
+          <div>
+            <div className="mb-6 inline-flex w-fit items-center rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium bg-primary/10 text-primary">
               Our Programs
             </div>
-            <h2 className="font-heading text-4xl font-bold text-foreground mb-4">Targeted Healing Paths</h2>
-            <p className="text-muted-foreground text-lg px-2">
+            <h2 className="font-heading text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
+              Targeted <br />Healing Paths
+            </h2>
+            <p className="text-muted-foreground text-lg mb-12 leading-relaxed max-w-md">
               Choose a specialized wellness program tailored to your unique biology and lifestyle goals.
             </p>
-          </div>
-          
-          <div className="flex flex-col gap-8">
-            {programs.map((program, idx) => (
-              <div key={idx} className="w-full max-w-[400px] mx-auto aspect-[4/5] rounded-[2rem] overflow-hidden relative shadow-xl ring-1 ring-border/50">
-                <Image 
-                  src={program.image} 
-                  fill 
-                  className="object-cover" 
-                  alt={program.title}
-                  priority={idx === 0}
-                  sizes="(max-width: 768px) 100vw"
-                />
-                {/* Brand-tinted deep teal scrim */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#005346]/95 via-[#005346]/60 to-transparent"></div>
-                
-                <div className="absolute inset-0 flex flex-col justify-end p-8 lg:p-10 z-10">
-                  <h3 className="font-heading text-3xl font-bold text-white mb-3 drop-shadow-sm">{program.title}</h3>
-                  <p className="text-white/90 mb-8 text-base leading-relaxed drop-shadow-sm">{program.desc}</p>
-                  
-                  {/* Nested CTA Architecture (Button-in-Button) */}
-                  <Link 
-                    href="/consult/expert" 
-                    className="group inline-flex items-center text-sm font-semibold bg-white text-black pl-5 pr-1.5 py-1.5 rounded-full hover:bg-gray-50 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] w-fit focus:outline-none focus-visible:ring-4 focus-visible:ring-primary shadow-xl active:scale-[0.98]"
+
+            <div className="flex flex-col gap-3">
+              {programs.map((p, i) => (
+                <button
+                  key={p.title}
+                  onClick={() => jumpTo(i)}
+                  aria-label={`Show ${p.title}`}
+                  aria-current={i === index}
+                  className={`flex items-center gap-4 rounded-xl px-4 py-3 text-left transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                    i === index ? "bg-primary/10" : "hover:bg-muted"
+                  }`}
+                >
+                  <span
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors duration-200 ${
+                      i === index
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-background border-2 border-border text-muted-foreground"
+                    }`}
                   >
-                    Consult Expert 
-                    <span className="ml-3 w-7 h-7 rounded-full bg-black/5 flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1 group-hover:-translate-y-[1px] group-hover:scale-105">
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
-                  </Link>
+                    {i + 1}
+                  </span>
+                  <span
+                    className={`text-lg transition-colors duration-200 ${
+                      i === index ? "font-bold text-foreground" : "text-muted-foreground font-medium"
+                    }`}
+                  >
+                    {p.title}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Stacked card widget — self-contained, no page scroll involvement */}
+          <div className="relative mx-auto w-full max-w-[460px]">
+            <div className="relative aspect-[4/5] w-full" role="group" aria-roledescription="carousel" aria-label="Health programs">
+              {/* Decorative peek cards behind the active card */}
+              {peek.map((p, i) => (
+                <div
+                  key={`peek-${p.title}`}
+                  aria-hidden="true"
+                  className="absolute inset-0 rounded-[2rem] overflow-hidden ring-1 ring-border/50"
+                  style={{
+                    transform: `translateY(${(i + 1) * 14}px) scale(${1 - (i + 1) * 0.05}) rotate(${
+                      i % 2 === 0 ? (i + 1) * 3 : -(i + 1) * 3
+                    }deg)`,
+                    zIndex: 0 - i,
+                  }}
+                >
+                  <Image src={p.image} alt="" fill className="object-cover opacity-60" />
+                  <div className="absolute inset-0 bg-background/50" />
                 </div>
+              ))}
+
+              <AnimatePresence initial={false} custom={direction} mode="popLayout">
+                <motion.div
+                  key={active.title}
+                  custom={direction}
+                  variants={cardVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.6}
+                  onDragEnd={(_event, info) => {
+                    if (info.offset.x < -SWIPE_THRESHOLD) paginate(1);
+                    else if (info.offset.x > SWIPE_THRESHOLD) paginate(-1);
+                  }}
+                  className="absolute inset-0 z-10 cursor-grab rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] ring-1 ring-border/50 bg-background active:cursor-grabbing"
+                >
+                  <Image
+                    src={active.image}
+                    alt={active.title}
+                    fill
+                    className="object-cover pointer-events-none"
+                    priority={index === 0}
+                    sizes="(max-width: 768px) 90vw, 460px"
+                    draggable={false}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#005346]/95 via-[#005346]/60 to-transparent" />
+
+                  <div className="absolute inset-0 flex flex-col justify-end p-8 lg:p-10 z-10">
+                    <h3 className="font-heading text-3xl font-bold text-white mb-3 tracking-tight drop-shadow-sm">
+                      {active.title}
+                    </h3>
+                    <p className="text-white/90 mb-8 text-base leading-relaxed drop-shadow-sm">
+                      {active.desc}
+                    </p>
+                    <Link
+                      href="/consult/expert"
+                      className="group inline-flex items-center text-sm font-semibold bg-white text-black pl-6 pr-2 py-2 rounded-full hover:bg-gray-50 transition-all duration-300 ease-out w-fit focus:outline-none focus-visible:ring-4 focus-visible:ring-primary shadow-xl active:scale-[0.98]"
+                    >
+                      Consult Expert
+                      <span className="ml-4 w-8 h-8 rounded-full bg-black/5 flex items-center justify-center transition-transform duration-300 ease-out group-hover:translate-x-1">
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </Link>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Controls: bounded to this widget only */}
+            <div className="mt-8 flex items-center justify-center gap-4">
+              <button
+                onClick={() => paginate(-1)}
+                aria-label="Previous program"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors duration-200 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+
+              <div className="flex items-center gap-2">
+                {programs.map((p, i) => (
+                  <button
+                    key={`dot-${p.title}`}
+                    onClick={() => jumpTo(i)}
+                    aria-label={`Go to ${p.title}`}
+                    aria-current={i === index}
+                    className={`h-2 rounded-full transition-all duration-300 ease-out ${
+                      i === index ? "w-6 bg-primary" : "w-2 bg-border hover:bg-muted-foreground/40"
+                    }`}
+                  />
+                ))}
               </div>
-            ))}
+
+              <button
+                onClick={() => paginate(1)}
+                aria-label="Next program"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors duration-200 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
