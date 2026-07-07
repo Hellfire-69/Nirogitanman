@@ -34,10 +34,10 @@ export function Footer() {
         background: "oklch(0.95 0.012 75)",
       }}
     >
-      {/* Faint decorative top edge accent — mirrors the primary brand color */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      {/* Faint decorative top edge accent */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
 
-      <div className="container mx-auto px-4 md:px-8 lg:px-12 pt-16 pb-10">
+      <div className="container mx-auto px-6 md:px-8 lg:px-12 pt-24 pb-12">
         {/* Main columns */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-12 md:gap-16 mb-14"
@@ -76,7 +76,7 @@ export function Footer() {
 
           {/* Explore column */}
           <div>
-            <p className="text-[11px] font-semibold text-foreground/50 uppercase tracking-[0.18em] mb-5">
+            <p className="text-xs font-bold text-foreground/60 uppercase tracking-[0.2em] mb-6">
               Explore
             </p>
             <ul className="flex flex-col gap-3">
@@ -95,7 +95,7 @@ export function Footer() {
 
           {/* Legal column */}
           <div>
-            <p className="text-[11px] font-semibold text-foreground/50 uppercase tracking-[0.18em] mb-5">
+            <p className="text-xs font-bold text-foreground/60 uppercase tracking-[0.2em] mb-6">
               Legal
             </p>
             <ul className="flex flex-col gap-3">

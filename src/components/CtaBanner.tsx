@@ -1,44 +1,61 @@
 /**
  * CtaBanner — Closing call-to-action section before the Footer.
- * Terracotta secondary background. WhileInView entrance + button-in-button
+ * Dramatic gradient background. WhileInView entrance + button-in-button
  * arrow pattern matching the Hero CTA.
  */
 "use client";
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 
 const silk = [0.16, 1, 0.3, 1] as const;
 
-export function CtaBanner() {
+interface CtaBannerProps {
+  bgImage?: string;
+}
+
+export function CtaBanner({ bgImage }: CtaBannerProps = {}) {
   return (
-    <section className="bg-secondary text-secondary-foreground py-16 md:py-28">
-      <div className="container mx-auto px-4 md:px-6 text-center">
+    <section className="relative overflow-hidden bg-[oklch(0.25_0.05_160)] text-white py-24 md:py-32">
+      {bgImage && (
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={bgImage}
+            alt="Call to action background"
+            fill
+            className="object-cover opacity-[0.15] mix-blend-overlay"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.25_0.05_160)]/90 via-transparent to-[oklch(0.25_0.05_160)]/50 pointer-events-none" />
+        </div>
+      )}
+
+      <div className="container mx-auto px-6 lg:px-12 text-center relative z-10">
         <motion.div
-          className="flex flex-col items-center gap-6"
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center gap-8"
+          initial={{ opacity: 0, y: 30, scale: 0.98 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.72, ease: silk }}
+          transition={{ duration: 0.8, ease: silk }}
         >
           <h2
-            className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold max-w-2xl mx-auto text-background [text-wrap:balance]"
-            style={{ letterSpacing: "-0.02em" }}
+            className="font-heading text-5xl md:text-6xl lg:text-[4.5rem] font-bold max-w-3xl mx-auto text-white leading-[1.05] tracking-tighter drop-shadow-md"
           >
             Ready to reclaim your health?
           </h2>
-          <p className="text-lg md:text-xl opacity-85 max-w-xl mx-auto text-background [text-wrap:balance] leading-relaxed">
+          <p className="text-lg md:text-xl text-white/80 max-w-xl mx-auto leading-relaxed">
             Join the platform that bridges ancient wisdom and modern science to give you the best of both worlds.
           </p>
-          {/* Button-in-button pattern matching Hero CTA */}
+          {/* Button-in-button pattern */}
           <Link
-            href="/dashboard"
-            className="group inline-flex items-center justify-center rounded-full bg-background px-8 py-4 text-sm font-bold text-secondary shadow-lg hover:bg-background/92 active:scale-[0.98] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] mt-2"
+            href="/signup"
+            className="group mt-6 inline-flex items-center justify-center rounded-full bg-white px-10 py-5 text-[16px] font-bold text-[oklch(0.35_0.1_160)] shadow-2xl hover:bg-white/95 active:scale-[0.98] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_0_50px_rgba(255,255,255,0.4)] ring-4 ring-white/20"
           >
             Get Started Now
-            <span className="ml-3 w-7 h-7 rounded-full bg-secondary/10 flex items-center justify-center transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1">
+            <span className="ml-4 w-10 h-10 rounded-full bg-[oklch(0.35_0.1_160)]/10 flex items-center justify-center transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1">
               <ArrowRight className="h-4 w-4" />
             </span>
           </Link>
