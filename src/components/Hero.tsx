@@ -9,10 +9,10 @@ import React from "react";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { getImageProps } from "next/image";
-import { motion } from "motion/react";
+import { motion, type Variants } from "motion/react";
 
 /* ─── Motion variants ─────────────────────────────────────────────────────── */
-const container = {
+const container: Variants = {
   hidden: {},
   show: {
     transition: {
@@ -22,12 +22,12 @@ const container = {
   },
 };
 
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 28 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.72, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.72, ease: [0.16, 1, 0.3, 1] as const },
   },
 };
 

@@ -1,6 +1,19 @@
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { getAuthUser } from "@/lib/auth";
 
+export interface DashboardStats {
+  totalBookings: number;
+  totalDietPlans: number;
+  totalChatSessions: number;
+  nextBookingAt: string | null;
+}
+
+export interface ActivityDay {
+  date: string; // "Mon", "Tue", etc.
+  bookings: number;
+  chats: number;
+}
+
 export interface DashboardUser {
   id: string;
   full_name: string;
@@ -116,4 +129,123 @@ export async function getActiveDietPlan(): Promise<ActiveDietPlan | null> {
     .maybeSingle();
 
   return data as ActiveDietPlan | null;
+}
+
+export async function getDashboardStats(): Promise<DashboardStats> {
+  const user = await getAuthUser();
+  if (!user) {
+    return { totalBookings: 0, totalDietPlans: 0, totalChatSessions: 0, nextBookingAt: null };
+  }
+
+  const supabase = await getSupabaseServerClient();
+
+  const [bookingsRes, dietRes, chatRes, nextBookingRes] = await Promise.all([
+    // Total bookings for user (RLS: public SELECT with user_id filter)
+    supabase
+      .from("bookings")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id),
+
+    // Total active diet plans (RLS: user-scoped SELECT)
+    supabase
+      .from("diet_plans")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("is_active", true),
+
+    // Total chat sessions (RLS: user-scoped SELECT auth.uid() = user_id)
+    supabase
+      .from("chat_logs")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id),
+
+    // Next upcoming booking slot date
+    supabase
+      .from("bookings")
+      .select("slots ( starts_at )")
+      .eq("user_id", user.id)
+      .eq("status", "confirmed"),
+  ]);
+
+  // Find next upcoming slot
+  const now = new Date();
+  let nextBookingAt: string | null = null;
+  if (nextBookingRes.data) {
+    const upcoming = nextBookingRes.data
+      .flatMap((b) => {
+        const slot = Array.isArray(b.slots) ? b.slots[0] : b.slots;
+        return slot?.starts_at ? [slot.starts_at as string] : [];
+      })
+      .filter((d) => new Date(d) >= now)
+      .sort();
+    nextBookingAt = upcoming[0] ?? null;
+  }
+
+  return {
+    totalBookings: bookingsRes.count ?? 0,
+    totalDietPlans: dietRes.count ?? 0,
+    totalChatSessions: chatRes.count ?? 0,
+    nextBookingAt,
+  };
+}
+
+export async function getActivityChartData(): Promise<ActivityDay[]> {
+  const user = await getAuthUser();
+
+  // Build 7-day window (today going back 6 days)
+  const days: ActivityDay[] = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    return {
+      date: d.toLocaleDateString("en-US", { weekday: "short" }),
+      bookings: 0,
+      chats: 0,
+    };
+  });
+
+  if (!user) return days;
+
+  const supabase = await getSupabaseServerClient();
+  const since = new Date();
+  since.setDate(since.getDate() - 6);
+  since.setHours(0, 0, 0, 0);
+
+  const [bookingsRes, chatRes] = await Promise.all([
+    supabase
+      .from("bookings")
+      .select("slots ( starts_at )")
+      .eq("user_id", user.id)
+      .gte("created_at", since.toISOString()),
+    supabase
+      .from("chat_logs")
+      .select("created_at")
+      .eq("user_id", user.id)
+      .gte("created_at", since.toISOString()),
+  ]);
+
+  // Map bookings to days using slot starts_at
+  if (bookingsRes.data) {
+    for (const b of bookingsRes.data) {
+      const slot = Array.isArray(b.slots) ? b.slots[0] : b.slots;
+      if (!slot?.starts_at) continue;
+      const label = new Date(slot.starts_at as string).toLocaleDateString("en-US", {
+        weekday: "short",
+      });
+      const day = days.find((d) => d.date === label);
+      if (day) day.bookings++;
+    }
+  }
+
+  // Map chat logs to days
+  if (chatRes.data) {
+    for (const c of chatRes.data) {
+      const label = new Date(c.created_at).toLocaleDateString("en-US", {
+        weekday: "short",
+      });
+      const day = days.find((d) => d.date === label);
+      if (day) day.chats++;
+    }
+  }
+
+  return days;
 }
