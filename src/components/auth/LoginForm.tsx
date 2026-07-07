@@ -45,7 +45,8 @@ export function LoginForm() {
   }
 
   return (
-    <GlassCard className="p-6 w-full max-w-sm">
+    <div className="w-full max-w-sm">
+      <GlassCard className="p-6">
       <h1 className="font-heading text-lg font-medium text-foreground mb-4">Log in</h1>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <FieldGroup>
@@ -93,5 +94,6 @@ export function LoginForm() {
         </FieldGroup>
       </form>
     </GlassCard>
+    </div>
   );
 }

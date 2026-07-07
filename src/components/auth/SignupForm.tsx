@@ -47,18 +47,21 @@ export function SignupForm() {
 
   if (submitState.status === "success") {
     return (
-      <GlassCard className="p-6 w-full max-w-sm flex flex-col items-center text-center gap-3">
-        <CheckCircle2 className="h-8 w-8 text-primary" strokeWidth={1.75} />
-        <h3 className="font-heading text-lg font-medium text-foreground">Check your email</h3>
-        <p className="text-sm text-muted-foreground">
-          We&apos;ve sent a confirmation link to finish creating your account.
-        </p>
-      </GlassCard>
+      <div className="w-full max-w-sm">
+        <GlassCard className="p-6 flex flex-col items-center text-center gap-3">
+          <CheckCircle2 className="h-8 w-8 text-primary" strokeWidth={1.75} />
+          <h3 className="font-heading text-lg font-medium text-foreground">Check your email</h3>
+          <p className="text-sm text-muted-foreground">
+            We&apos;ve sent a confirmation link to finish creating your account.
+          </p>
+        </GlassCard>
+      </div>
     );
   }
 
   return (
-    <GlassCard className="p-6 w-full max-w-sm">
+    <div className="w-full max-w-sm">
+      <GlassCard className="p-6">
       <h1 className="font-heading text-lg font-medium text-foreground mb-4">Sign up</h1>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <FieldGroup>
@@ -125,5 +128,6 @@ export function SignupForm() {
         </FieldGroup>
       </form>
     </GlassCard>
+    </div>
   );
 }

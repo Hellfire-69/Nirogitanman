@@ -1,6 +1,7 @@
 import { Hero } from "@/components/Hero";
 import { TrustBar } from "@/components/TrustBar";
 import { ProgramsGrid } from "@/components/ProgramsGrid";
+import { FeaturesShowcase } from "@/components/FeaturesShowcase";
 import { StatsBar } from "@/components/StatsBar";
 import { HowItWorks } from "@/components/HowItWorks";
 import { CtaBanner } from "@/components/CtaBanner";
@@ -12,6 +13,7 @@ export default function Home() {
       <Hero />
       <TrustBar />
       <ProgramsGrid />
+      <FeaturesShowcase />
       <StatsBar />
       <HowItWorks />
       <CtaBanner />

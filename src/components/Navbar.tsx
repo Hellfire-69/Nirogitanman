@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "./ui/button";
+import { buttonVariants } from "./ui/button";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X, Leaf } from "lucide-react";
 
@@ -54,12 +54,18 @@ export function Navbar() {
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center gap-3 shrink-0">
-            <Button variant="ghost" className="rounded-full px-4">
+            <Link 
+              href="/login" 
+              className={buttonVariants({ variant: "ghost", className: "rounded-full px-4" })}
+            >
               Log in
-            </Button>
-            <Button className="rounded-full shadow-sm active:scale-95 transition-all px-6">
+            </Link>
+            <Link 
+              href="/signup" 
+              className={buttonVariants({ className: "rounded-full shadow-sm active:scale-95 transition-all px-6" })}
+            >
               Get Started
-            </Button>
+            </Link>
           </div>
 
           {/* Mobile Toggle */}
@@ -106,8 +112,20 @@ export function Navbar() {
                 Dashboard
               </Link>
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
-                <Button variant="outline" className="w-full justify-center rounded-xl">Log in</Button>
-                <Button className="w-full justify-center shadow-sm rounded-xl">Get Started</Button>
+                <Link 
+                  href="/login" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={buttonVariants({ variant: "outline", className: "w-full justify-center rounded-xl" })}
+                >
+                  Log in
+                </Link>
+                <Link 
+                  href="/signup" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={buttonVariants({ className: "w-full justify-center shadow-sm rounded-xl" })}
+                >
+                  Get Started
+                </Link>
               </div>
             </div>
           </motion.div>
